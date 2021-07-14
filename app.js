@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const cors = require('cors');
 const mysql = require('mysql2/promise'); 
+const jwt = require('jsonwebtoken');
 
 const app = express(); 
 
@@ -48,6 +49,50 @@ app.use('/register', registerRouter);
 //*********************** login endpoint **************/
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
+
+//**************************************** JWT Verfication **************************************************8*****/
+// Jwt verification checks to see if there is an authorization header with a valid jwt in it.
+app.use(async function verifyJwt(req, res, next) {
+    // console.log('REQUESTTTT', req.headers)
+    if (!req.headers.authorization) {
+      throw(401, 'Invalid authorization');
+    }
+  
+    const [scheme, token] = req.headers.authorization.split(' ');
+  
+    console.log('[scheme, token]', scheme, ' ', token);
+  
+    if (scheme !== 'Bearer') {
+      throw(401, 'Invalid authorization');
+    }
+  
+    try {
+      const payload = jwt.verify(token, process.env.JWT_KEY);
+  
+      console.log('payload', payload)
+  
+      req.user = payload;
+    } catch (err) {
+      if (err.message && (err.message.toUpperCase() === 'INVALID TOKEN' || err.message.toUpperCase() === 'JWT EXPIRED')) {
+  
+        req.status = err.status || 500;
+        req.body = err.message;
+        req.app.emit('jwt-error', err, req);
+      } else {
+  
+        throw((err.status || 500), err.message);
+      }
+      console.log(err)
+    }
+  
+    await next();
+});
+//********************************Private Endpoints **************************/
+// These are the private endpoints, they require jwt authentication. 
+//When a request is made it goes to one of these functions after it goes through the middleware.
+//Then a response is set an returned (like `res.json(users)`)
+const userRouter = require('./routes/user');
+app.use('/user', userRouter);
 
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));
