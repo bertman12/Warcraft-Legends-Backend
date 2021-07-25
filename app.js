@@ -40,7 +40,8 @@ app.use(async function mysqlConnection(req, res, next) {
 app.use(cors());
 app.use(express.json());
 
-
+const gamesRouters = require('./routes/games');
+app.use('/games', gamesRouters);
 //*************************************************** register and login *****************************************************/
 // Public endpoints. User(s) doesn't need to be authenticated in order to reach them
 //********* registration endpoint ********************/
