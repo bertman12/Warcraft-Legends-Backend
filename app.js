@@ -40,6 +40,7 @@ app.use(async function mysqlConnection(req, res, next) {
 app.use(cors());
 app.use(express.json());
 
+
 //*************************************************** register and login *****************************************************/
 // Public endpoints. User(s) doesn't need to be authenticated in order to reach them
 //********* registration endpoint ********************/
