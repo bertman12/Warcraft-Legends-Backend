@@ -15,4 +15,16 @@ router.get("/", async (req, res)=> {
     }
 });
 
+//get a single game
+
+//add a single game
+
+/**Private Endpoints that will require user authentication or perhaps I could use angular guards to prevent certain actions via the frontend
+ * instead of the backend.?
+*/
+//update a game object
+
+//remove a game object
+
+
 module.exports = router;
