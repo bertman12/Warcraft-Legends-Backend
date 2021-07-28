@@ -40,8 +40,11 @@ app.use(async function mysqlConnection(req, res, next) {
 app.use(cors());
 app.use(express.json());
 
-const gamesRouters = require('./routes/games');
-app.use('/games', gamesRouters);
+//*************************************************** get an individual game or all *****************************************************/
+const getGameReviewsRouter = require('./routes/getGameReviews');
+app.use('/game-reviews-list', getGameReviewsRouter);
+
+
 //*************************************************** register and login *****************************************************/
 // Public endpoints. User(s) doesn't need to be authenticated in order to reach them
 //********* registration endpoint ********************/
@@ -56,6 +59,7 @@ app.use('/login', loginRouter);
 // Jwt verification checks to see if there is an authorization header with a valid jwt in it.
 app.use(async function verifyJwt(req, res, next) {
     // console.log('REQUESTTTT', req.headers)
+    console.log('WE HAVE ENTERED THE AUTH ROUTER');
     if (!req.headers.authorization) {
       throw(401, 'Invalid authorization');
     }
@@ -95,6 +99,12 @@ app.use(async function verifyJwt(req, res, next) {
 //Then a response is set an returned (like `res.json(users)`)
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
+
+//*************************************************** Create, update, delete  *****************************************************/
+const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
+app.use('/game-reviews-list', modifyGameReviewsListRouter);
+//the modification parameter can be a string: {edit, create, delete}
+//depending on the string it wil reach the appropriate endpoint
 
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));

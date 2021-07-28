@@ -55,13 +55,28 @@ UNLOCK TABLES;
 
 -- Dump completed on 2021-07-07 15:09:26
 
-CREATE TABLE `games` (
+-- CREATE TABLE `game_reviews` (
+--   `id` int unsigned NOT NULL AUTO_INCREMENT,
+--   `gameId` int unsigned
+--   `title` varchar(255) DEFAULT NULL,
+--   `author` varchar(255) DEFAULT NULL,
+--   `description` varchar(255) DEFAULT NULL,
+--   --featuredescriptions
+--   --featureimages
+--   `genre` varchar(255) DEFAULT NULL,
+--   `version` varchar(255) DEFAULT NULL,
+--   `rating` varchar(255) DEFAULT NULL,
+--   `videoSrc` varchar(255) DEFAULT NULL,
+--   `imgSrc` varchar(255) DEFAULT NULL,
+--   PRIMARY KEY (`id`)
+-- ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `game_reviews` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `gameId` int unsigned,
   `title` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
-  --featuredescriptions
-  --featureimages
   `genre` varchar(255) DEFAULT NULL,
   `version` varchar(255) DEFAULT NULL,
   `rating` varchar(255) DEFAULT NULL,
@@ -69,7 +84,6 @@ CREATE TABLE `games` (
   `imgSrc` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 --     id: number,
 --     title: string,
@@ -85,12 +99,12 @@ CREATE TABLE `games` (
 --     imgSrc: string
 --
 
-INSERT INTO games VALUES
+INSERT INTO game_reviews VALUES
   (0,
   "Uther Party",
   "TheZizz","Play a variety of randomly selected mini-games against your opponents.\
---          A highly appraised warcraft classic, this custom game has been a benchmark for other\
---          content creators when it comes to interesting and fun gameplay.",
+   A highly appraised warcraft classic, this custom game has been a benchmark for other\
+   content creators when it comes to interesting and fun gameplay.",
   'Mini Games',
   '10.0',
   '5',
