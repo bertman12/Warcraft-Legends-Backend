@@ -7,13 +7,16 @@ router.post('/create', async (req, res) => {
         const newReview = req.body;
         console.log("The new review is ...",newReview);
 
+
+        // const fetched_id = await req.db.query(`SELECT MAX(game_id) FROM game_reviews`,);
+        // if(!fetched_id){
+        //     fetched_id === 0;
+        // }
         await req.db.query(`
-        INSERT INTO game_reviews (id, game_id, title, author, description, genre, version, rating, videoSrc, imgSrc)
-        VALUES (:id, :game_id, :title, :author, :description, :genre, :version, :rating, :videoSrc, :imgSrc
-        );`,
+        INSERT INTO game_reviews (id, title, author, description, genre, version, rating, videoSrc, imgSrc)
+        VALUES                   (:id, :title, :author, :description, :genre, :version, :rating, :videoSrc, :imgSrc);`,
         {
             id: 0,
-            game_id: req.body.game_id, 
             title: req.body.title, 
             author: req.body.author, 
             description: req.body.description, 
@@ -23,7 +26,9 @@ router.post('/create', async (req, res) => {
             videoSrc: req.body.videoSrc, 
             imgSrc: req.body.imgSrc
         });
-        res.json('posted new review!');
+        res.json('Game Review was created!');
+        // res.json('posted new review! Here is the new game id as well: ', game_id);
+        
     }
     catch(err){
         console.error(err);
@@ -44,10 +49,10 @@ router.put('/edit/:id', async (req, res) => {
                 rating = :rating,
                 videoSrc = :videoSrc,
                 imgSrc = :imgSrc
-            WHERE game_id = :game_id
+            WHERE id = :id
             `,
             {
-                game_id: req.params.id, 
+                id: req.params.id, 
                 title: req.body.title, 
                 author: req.body.author, 
                 description: req.body.description, 
@@ -68,8 +73,8 @@ router.put('/edit/:id', async (req, res) => {
 router.delete('/delete/:id', async(req, res) => {
     try{
         await req.db.query(
-        `DELETE FROM game_reviews WHERE game_id = :game_id`,
-        {game_id: req.params.id}
+        `DELETE FROM game_reviews WHERE id = :id`,
+        {id: req.params.id}
         );
         res.json('game was deleted');
     }

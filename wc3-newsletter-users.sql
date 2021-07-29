@@ -73,7 +73,6 @@ UNLOCK TABLES;
 
 CREATE TABLE `game_reviews` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `gameId` int unsigned,
   `title` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,

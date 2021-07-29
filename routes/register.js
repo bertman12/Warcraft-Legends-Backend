@@ -11,18 +11,19 @@ router.post('/', async (req , res) => {
     // console.log(`request body:${JSON.stringify(req.body,null,2)}`);
     // Hashes the password and inserts the info into the `user` table
     const hash = await bcrypt.hash(req.body.password, 10);
-    // console.log(`hash: ${hash}`);
+    // role=0 by default which means they are normal user 
     try {
       [user] = await req.db.query(`
-        INSERT INTO user (username, password, name, email, age, location)
-        VALUES (:username, :password, :name, :email, :age, :location);
+        INSERT INTO user (username, password, name, email, age, location, role)
+        VALUES (:username, :password, :name, :email, :age, :location, :role);
       `, {
         username: req.body.username,
         password: hash,
         name: req.body.name,
         email: req.body.email,
         age: req.body.age,
-        location: req.body.location
+        location: req.body.location,
+        role: 0
       });
 
       console.log('user', user)

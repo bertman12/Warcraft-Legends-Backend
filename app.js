@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser')
 const cors = require('cors');
 const mysql = require('mysql2/promise'); 
 const jwt = require('jsonwebtoken');
@@ -55,11 +54,12 @@ app.use('/register', registerRouter);
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
 
+const getComments = require('./routes/comments')
+app.use('/comments', getComments);
 //**************************************** JWT Verfication **************************************************8*****/
 // Jwt verification checks to see if there is an authorization header with a valid jwt in it.
 app.use(async function verifyJwt(req, res, next) {
     // console.log('REQUESTTTT', req.headers)
-    console.log('WE HAVE ENTERED THE AUTH ROUTER');
     if (!req.headers.authorization) {
       throw(401, 'Invalid authorization');
     }
@@ -96,13 +96,19 @@ app.use(async function verifyJwt(req, res, next) {
 //********************************Private Endpoints **************************/
 // These are the private endpoints, they require jwt authentication. 
 //When a request is made it goes to one of these functions after it goes through the middleware.
+//***** */
 //Then a response is set an returned (like `res.json(users)`)
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
-//*************************************************** Create, update, delete  *****************************************************/
+//*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
 app.use('/game-reviews-list', modifyGameReviewsListRouter);
+
+//****************************************************************************************************************/
+
+const commentRouter = require('./routes/comment');
+app.use('/comment', commentRouter);
 
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));

@@ -4,7 +4,7 @@ const router = express.Router();
 //get all game reviews
 router.get("/", async (req, res)=> {
     try{
-        const [[gameReviews]] = await req.db.query(
+        const [gameReviews] = await req.db.query(
             `SELECT * FROM game_reviews`);
             res.json(gameReviews);
     }
@@ -17,9 +17,9 @@ router.get("/", async (req, res)=> {
 router.get("/:id", async (req, res)=> {
     try{
         const [[gameReview]] = await req.db.query(
-            `SELECT * FROM game_reviews WHERE game_id = :game_id`,
+            `SELECT * FROM game_reviews WHERE id = :id`,
             {
-                game_id: req.params.id
+                id: req.params.id
             });
             res.json(gameReview);
             console.log('The req.params object', req.params);

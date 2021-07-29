@@ -22,7 +22,7 @@ router.post('/', async (req , res) => {
     
         const compare = await bcrypt.compare(req.body.password, userPassword);
     
-        // why no password?  
+        // role is 3 by default whihc would be  
         if (compare) {
           const payload = {
             userId: user.id,
@@ -30,8 +30,8 @@ router.post('/', async (req , res) => {
             name: user.name,
             email: user.email,
             age: user.age,
-            location: user.location
-            //role: 4
+            location: user.location,
+            role: user.role
           }
           
           const encodedUser = jwt.sign(payload, process.env.JWT_KEY);
