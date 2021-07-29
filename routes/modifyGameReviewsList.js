@@ -62,7 +62,7 @@ router.put('/edit/:id', async (req, res) => {
                 videoSrc: req.body.videoSrc, 
                 imgSrc: req.body.imgSrc
             });
-            res.json("object updated");
+            res.json("Game Review was edited");
         }
         catch(err){
             console.error(err);
@@ -76,7 +76,7 @@ router.delete('/delete/:id', async(req, res) => {
         `DELETE FROM game_reviews WHERE id = :id`,
         {id: req.params.id}
         );
-        res.json('game was deleted');
+        res.json('Game Review has been deleted!');
     }
     catch(err){
         console.error(err);
