@@ -21,7 +21,7 @@ app.use(async function mysqlConnection(req, res, next) {
     try {
       req.db = await pool.getConnection();
       req.db.connection.config.namedPlaceholders = true;
-      
+
       await req.db.query('SET SESSION sql_mode = "TRADITIONAL"');
       await req.db.query(`SET time_zone = '-8:00'`);
   
@@ -100,9 +100,14 @@ app.use(async function verifyJwt(req, res, next) {
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
+//use this dummy route to check user role before entering endpoint for modifying games
+const dummyRoute = express.Router();
+dummyRoute.use((req, res)=>{
+  console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
+})
 //*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
-app.use('/game-reviews-list', modifyGameReviewsListRouter);
+app.use('/game-reviews-list', dummyRoute,modifyGameReviewsListRouter);
 
 //****************************************************************************************************************/
 

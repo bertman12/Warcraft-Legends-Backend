@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
+
+
+
+async function getLastReviewId(req){
+    [[query]] = await req.db.query(`SELECT MAX(review_id) FROM review_features`);
+    console.log('the query is..', query);
+    lastReviewId = query['MAX(review_id)'];
+    console.log('The last review id is ...',lastReviewId);
+    return lastReviewId;
+}
+
 //create a game
 router.post('/create', async (req, res) => {
 
-    let query_response;
+    let lastReviewId;
     try{
         //adding review info
         await req.db.query(`
@@ -20,26 +31,26 @@ router.post('/create', async (req, res) => {
             videoSrc: req.body.videoSrc, 
             imgSrc: req.body.imgSrc
         }).then( (resp)=> {
-                console.log('before assignment response',resp);
-                [query_response] = resp;
-                console.log('after assignment response', query_response.insertId);
+                [lastReviewId] = resp;
         }).catch((err)=> {console.error(err);});
+
         //adding feature arrays
         for(const x in req.body.featureDescriptions){
             req.db.query(`
             INSERT INTO review_features (review_id, feature_image, feature_description) 
             VALUES                      (:review_id, :feature_images, :feature_descriptions);`,
             {
-                review_id: query_response.insertId,
+                review_id: lastReviewId.insertId,
                 feature_images: req.body.featureImages[x],
                 feature_descriptions: req.body.featureDescriptions[x]
             });
         }
+
         req.db.query(`
         INSERT INTO review_publish_date (review_id, month, day, year)
         VALUES                          (:review_id, :month, :day, :year);
         `,{
-            review_id: query_response.insertId,
+            review_id: lastReviewId.insertId,
             month: req.body.publishDate.month,
             day: req.body.publishDate.day,
             year: req.body.publishDate.year
@@ -51,8 +62,6 @@ router.post('/create', async (req, res) => {
     }
 });
 
-
-                
 //edit a game
 router.put('/edit/:id', async (req, res) => {
     try{
@@ -79,63 +88,88 @@ router.put('/edit/:id', async (req, res) => {
                 imgSrc: req.body.imgSrc
             });
 
-            //was used for getting number of features in the database
-            // const [[dbFeaturesLength]] = await req.db.query(`
-            // SELECT COUNT(*) FROM review_features WHERE review_id = :review_id`,
-            // {
-            //     review_id: req.params.id
-            // });
-            // console.log('number of features in db currently: ', dbFeaturesLength['COUNT(*)']);
-
-            
-            //extra info about selection
-            // const [groupedFeatureIdsArr, [catalog]] = await req.db.query(`
-            // SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
-            // { review_id: req.params.id});
-            // console.log('the feature catalog ...', catalog);
-            // console.log('the feature catalog length...', catalog._catalogLength);
-            
-
-            const [groupedFeatureIdsArr] = await req.db.query(`
-            SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
-            { review_id: req.params.id });
-            console.log('the feature groupedFeatureIdsArr are ...', groupedFeatureIdsArr);
-            console.log('the feature groupedFeatureIdsArr length is ...', groupedFeatureIdsArr.length);
+        const [groupedFeatureIdsArr] = await req.db.query(`
+        SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
+        { review_id: req.params.id });
+        
+        if(req.body.featureDescriptions.length <=  groupedFeatureIdsArr.length){
+            console.log('NO NEW OR DELETED FEATURES');
             for(const x in groupedFeatureIdsArr){
-                console.log(groupedFeatureIdsArr[x].feature_subset_id);
+                await req.db.query(`
+                UPDATE review_features  
+                SET 
+                feature_image = :feature_image,
+                feature_description = :feature_description
+                WHERE review_id = :review_id AND feature_subset_id = :curr_id
+                    `,
+                {
+                    review_id: req.params.id,
+                    feature_image: req.body.featureImages[x],
+                    feature_description: req.body.featureDescriptions[x],
+                    curr_id: groupedFeatureIdsArr[x].feature_subset_id
+                });
             }
-            //edit the review features if there are no new or deleted features
-            //check if there are new or missing features then delete or create rows appropriately
-            //if there are less elements in the array then it will assign the slots in the db equal to the slots in the request array, if one
-            //is missing then it will be assigned null. 
-            if(req.body.featureDescriptions.length <=  groupedFeatureIdsArr.length){
-                console.log('no new or deleted features');
-                for(const x in groupedFeatureIdsArr){
-                    await req.db.query(`
-                    UPDATE review_features  
-                    SET 
-                    feature_image = :feature_image,
-                    feature_description = :feature_description
-                    WHERE review_id = :review_id AND feature_subset_id = :curr_id
-                      `,
+            req.db.query(`
+                UPDATE review_publish_date  
+                SET 
+                month = :month,
+                day = :day,
+                year = :year
+                WHERE review_id = :review_id`,
+                {
+                    review_id: req.params.id,
+                    month: req.body.publishDate.month,
+                    day: req.body.publishDate.day,
+                    year: req.body.publishDate.year,
+            });
+        }
+        else{
+            console.log('THERE ARE NEW OR REMOVED FEATURES');
+            //only update rows that already exist in the database
+            for(const x in groupedFeatureIdsArr){
+                await req.db.query(`
+                UPDATE review_features  
+                SET 
+                feature_image = :feature_image,
+                feature_description = :feature_description
+                WHERE review_id = :review_id AND feature_subset_id = :curr_id
+                    `,
+                {
+                    review_id: req.params.id,
+                    feature_image: req.body.featureImages[x],
+                    feature_description: req.body.featureDescriptions[x],
+                    curr_id: groupedFeatureIdsArr[x].feature_subset_id
+                });
+            }
+            //begin inserting rows for the new features that are added
+            for(let x = groupedFeatureIdsArr.length; x < req.body.featureDescriptions.length; x++){
+                req.db.query(`
+                    INSERT INTO review_features (review_id, feature_image, feature_description) 
+                    VALUES                      (:review_id, :feature_images, :feature_descriptions);`,
                     {
                         review_id: req.params.id,
-                        feature_image: req.body.featureImages[x],
-                        feature_description: req.body.featureDescriptions[x],
-                        curr_id: groupedFeatureIdsArr[x].feature_subset_id
+                        feature_images: req.body.featureImages[x],
+                        feature_descriptions: req.body.featureDescriptions[x]
                     });
-                    groupedFeatureIdsArr.unshift();
-                }
-            }
-            else{
-                console.log('length of the request array',req.body.featureDescriptions.length);
-                console.log('there are new or deleted features');
-            }
-            
-            await req.db.query(`DELETE FROM review_features WHERE feature_image IS NULL`)
-            .then((response)=> {console.log('THE RESPONSE',response);});
-            console.log('deletions complete');
-            res.json("Game Review was edited");
+                }  
+            req.db.query(`
+            UPDATE review_publish_date  
+            SET 
+            month = :month,
+            day = :day,
+            year = :year
+            WHERE review_id = :review_id`,
+            {
+                review_id: req.params.id,
+                month: req.body.publishDate.month,
+                day: req.body.publishDate.day,
+                year: req.body.publishDate.year,
+            }); 
+        }
+        //clean up any null rows
+        req.db.query(`DELETE FROM review_features WHERE feature_image IS NULL`);
+        console.log('DELETIONS COMPLETE');
+        res.json("Game Review was edited");
         }
         catch(err){
             console.error(err);
@@ -157,3 +191,28 @@ router.put('/edit/:id', async (req, res) => {
 });
 
 module.exports = router;
+
+
+//edit the review features if there are no new or deleted features
+            //check if there are new or missing features then delete or create rows appropriately
+            //if there are less elements in the array then it will assign the slots in the db equal to the slots in the request array, if one
+            //is missing then it will be assigned null. 
+
+
+
+            //was used for getting number of features in the database
+            // const [[dbFeaturesLength]] = await req.db.query(`
+            // SELECT COUNT(*) FROM review_features WHERE review_id = :review_id`,
+            // {
+            //     review_id: req.params.id
+            // });
+            // console.log('number of features in db currently: ', dbFeaturesLength['COUNT(*)']);
+
+            
+            //extra info about selection
+            // const [groupedFeatureIdsArr, [catalog]] = await req.db.query(`
+            // SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
+            // { review_id: req.params.id});
+            // console.log('the feature catalog ...', catalog);
+            // console.log('the feature catalog length...', catalog._catalogLength);
+            
