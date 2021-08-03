@@ -69,7 +69,6 @@ app.use(async function verifyJwt(req, res, next) {
   
     try {
       const payload = jwt.verify(token, process.env.JWT_KEY);
-  
       console.log('payload', payload)
   
       req.user = payload;
