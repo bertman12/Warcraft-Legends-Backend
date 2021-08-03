@@ -16,6 +16,12 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `review_features_AFTER_INSERT` AFTER I
 	UPDATE review_features SET review_id  = 0 ;
 END
 
+CREATE DEFINER = CURRENT_USER TRIGGER `wc3-newsletter-db`.`review_features_AFTER_UPDATE` AFTER UPDATE ON `review_features` FOR EACH ROW
+BEGIN
+	DELETE FROM review_features WHERE feature_description = NULL;
+END
+
+
 -- CREATE TABLE `review_features` (
 --   `id` int unsigned NOT NULL AUTO_INCREMENT,
 --   `review_id` int unsigned NOT NULL, 

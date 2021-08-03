@@ -24,7 +24,6 @@ router.post('/create', async (req, res) => {
                 [query_response] = resp;
                 console.log('after assignment response', query_response.insertId);
         }).catch((err)=> {console.error(err);});
-
         //adding feature arrays
         for(const x in req.body.featureDescriptions){
             req.db.query(`
@@ -36,7 +35,6 @@ router.post('/create', async (req, res) => {
                 feature_descriptions: req.body.featureDescriptions[x]
             });
         }
-
         req.db.query(`
         INSERT INTO review_publish_date (review_id, month, day, year)
         VALUES                          (:review_id, :month, :day, :year);
@@ -45,10 +43,7 @@ router.post('/create', async (req, res) => {
             month: req.body.publishDate.month,
             day: req.body.publishDate.day,
             year: req.body.publishDate.year
-        })
-
-
-
+        });
         res.json('Game Review was created!');
     }
     catch(err){
@@ -61,8 +56,7 @@ router.post('/create', async (req, res) => {
 //edit a game
 router.put('/edit/:id', async (req, res) => {
     try{
-        req.db.query(
-            `
+        req.db.query(`
             UPDATE game_reviews
             SET title = :title,
             author = :author,
@@ -72,8 +66,7 @@ router.put('/edit/:id', async (req, res) => {
             rating = :rating,
             videoSrc = :videoSrc,
             imgSrc = :imgSrc
-            WHERE id = :id
-            `,
+            WHERE id = :id`,
             {
                 id: req.params.id, 
                 title: req.body.title, 
@@ -86,30 +79,62 @@ router.put('/edit/:id', async (req, res) => {
                 imgSrc: req.body.imgSrc
             });
 
-            const [groupedFeatureIds] = await req.db.query(`
+            //was used for getting number of features in the database
+            // const [[dbFeaturesLength]] = await req.db.query(`
+            // SELECT COUNT(*) FROM review_features WHERE review_id = :review_id`,
+            // {
+            //     review_id: req.params.id
+            // });
+            // console.log('number of features in db currently: ', dbFeaturesLength['COUNT(*)']);
+
+            
+            //extra info about selection
+            // const [groupedFeatureIdsArr, [catalog]] = await req.db.query(`
+            // SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
+            // { review_id: req.params.id});
+            // console.log('the feature catalog ...', catalog);
+            // console.log('the feature catalog length...', catalog._catalogLength);
+            
+
+            const [groupedFeatureIdsArr] = await req.db.query(`
             SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
-            { review_id: req.params.id});
-
-            for(const x in groupedFeatureIds){
-                console.log(groupedFeatureIds[x].feature_subset_id)}
-            console.log('the feature groupedFeatureIds are ...', groupedFeatureIds);
-
-            for(const x in groupedFeatureIds){
-                await req.db.query(`
-                UPDATE review_features  
-                SET 
-                feature_image = :feature_image,
-                feature_description = :feature_description
-                WHERE review_id = :review_id AND feature_subset_id = :curr_id
-                  `,
-                {
-                    review_id: req.params.id,
-                    feature_image: req.body.featureImages[x],
-                    feature_description: req.body.featureDescriptions[x],
-                    curr_id: groupedFeatureIds[x].feature_subset_id
-                });
-                groupedFeatureIds.unshift();
+            { review_id: req.params.id });
+            console.log('the feature groupedFeatureIdsArr are ...', groupedFeatureIdsArr);
+            console.log('the feature groupedFeatureIdsArr length is ...', groupedFeatureIdsArr.length);
+            for(const x in groupedFeatureIdsArr){
+                console.log(groupedFeatureIdsArr[x].feature_subset_id);
             }
+            //edit the review features if there are no new or deleted features
+            //check if there are new or missing features then delete or create rows appropriately
+            //if there are less elements in the array then it will assign the slots in the db equal to the slots in the request array, if one
+            //is missing then it will be assigned null. 
+            if(req.body.featureDescriptions.length <=  groupedFeatureIdsArr.length){
+                console.log('no new or deleted features');
+                for(const x in groupedFeatureIdsArr){
+                    await req.db.query(`
+                    UPDATE review_features  
+                    SET 
+                    feature_image = :feature_image,
+                    feature_description = :feature_description
+                    WHERE review_id = :review_id AND feature_subset_id = :curr_id
+                      `,
+                    {
+                        review_id: req.params.id,
+                        feature_image: req.body.featureImages[x],
+                        feature_description: req.body.featureDescriptions[x],
+                        curr_id: groupedFeatureIdsArr[x].feature_subset_id
+                    });
+                    groupedFeatureIdsArr.unshift();
+                }
+            }
+            else{
+                console.log('length of the request array',req.body.featureDescriptions.length);
+                console.log('there are new or deleted features');
+            }
+            
+            await req.db.query(`DELETE FROM review_features WHERE feature_image IS NULL`)
+            .then((response)=> {console.log('THE RESPONSE',response);});
+            console.log('deletions complete');
             res.json("Game Review was edited");
         }
         catch(err){
