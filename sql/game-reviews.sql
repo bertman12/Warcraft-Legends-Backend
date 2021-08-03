@@ -9,7 +9,7 @@ CREATE TABLE `game_reviews` (
   `videoSrc` varchar(255) DEFAULT NULL,
   `imgSrc` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --     id: number,
 --     title: string,

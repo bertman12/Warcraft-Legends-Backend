@@ -4,7 +4,6 @@ const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
 
 const app = express(); 
-
 // importing and load .env file
 require('dotenv').config();
 
@@ -22,7 +21,7 @@ app.use(async function mysqlConnection(req, res, next) {
     try {
       req.db = await pool.getConnection();
       req.db.connection.config.namedPlaceholders = true;
-  
+      
       await req.db.query('SET SESSION sql_mode = "TRADITIONAL"');
       await req.db.query(`SET time_zone = '-8:00'`);
   
