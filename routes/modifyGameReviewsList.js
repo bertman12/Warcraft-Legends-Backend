@@ -36,7 +36,7 @@ router.post('/create', async (req, res) => {
 
         //adding feature arrays
         for(const x in req.body.featureDescriptions){
-            req.db.query(`
+            await req.db.query(`
             INSERT INTO review_features (review_id, feature_image, feature_description) 
             VALUES                      (:review_id, :feature_images, :feature_descriptions);`,
             {
@@ -46,10 +46,10 @@ router.post('/create', async (req, res) => {
             });
         }
 
-        req.db.query(`
+        await req.db.query(`
         INSERT INTO review_publish_date (review_id, month, day, year)
-        VALUES                          (:review_id, :month, :day, :year);
-        `,{
+        VALUES                          (:review_id, :month, :day, :year);`
+        ,{
             review_id: lastReviewId.insertId,
             month: req.body.publishDate.month,
             day: req.body.publishDate.day,
@@ -100,8 +100,7 @@ router.put('/edit/:id', async (req, res) => {
                 SET 
                 feature_image = :feature_image,
                 feature_description = :feature_description
-                WHERE review_id = :review_id AND feature_subset_id = :curr_id
-                    `,
+                WHERE review_id = :review_id AND feature_subset_id = :curr_id`,
                 {
                     review_id: req.params.id,
                     feature_image: req.body.featureImages[x],
@@ -132,8 +131,7 @@ router.put('/edit/:id', async (req, res) => {
                 SET 
                 feature_image = :feature_image,
                 feature_description = :feature_description
-                WHERE review_id = :review_id AND feature_subset_id = :curr_id
-                    `,
+                WHERE review_id = :review_id AND feature_subset_id = :curr_id`,
                 {
                     review_id: req.params.id,
                     feature_image: req.body.featureImages[x],
@@ -166,9 +164,7 @@ router.put('/edit/:id', async (req, res) => {
                 year: req.body.publishDate.year,
             }); 
         }
-        //clean up any null rows
         req.db.query(`DELETE FROM review_features WHERE feature_image IS NULL`);
-        console.log('DELETIONS COMPLETE');
         res.json("Game Review was edited");
         }
         catch(err){
@@ -176,18 +172,17 @@ router.put('/edit/:id', async (req, res) => {
         }
     });
     
-    //delete a game
-    router.delete('/delete/:id', async(req, res) => {
-        try{
-            await req.db.query(
-                `DELETE FROM game_reviews WHERE id = :id`,
-                {id: req.params.id}
-                );
-                res.json('Game Review has been deleted!');
-            }
-            catch(err){
-                console.error(err);
-            }
+//delete a game
+router.delete('/delete/:id', async(req, res) => {
+    try{
+        await req.db.query(
+            `DELETE FROM game_reviews WHERE id = :id`,
+            {id: req.params.id});
+            res.json('Game Review has been deleted!');
+        }
+        catch(err){
+            console.error(err);
+        }
 });
 
 module.exports = router;

@@ -65,7 +65,7 @@ app.use(async function verifyJwt(req, res, next) {
   
     const [scheme, token] = req.headers.authorization.split(' ');
   
-    console.log('[scheme, token]', scheme, ' ', token);
+    // console.log('[scheme, token]', scheme, ' ', token);
   
     if (scheme !== 'Bearer') {
       throw(401, 'Invalid authorization');
@@ -74,7 +74,7 @@ app.use(async function verifyJwt(req, res, next) {
     try {
       const payload = jwt.verify(token, process.env.JWT_KEY);
   
-      console.log('payload', payload)
+      // console.log('payload', payload)
   
       req.user = payload;
     } catch (err) {
@@ -101,13 +101,13 @@ const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
 //use this dummy route to check user role before entering endpoint for modifying games
-const dummyRoute = express.Router();
-dummyRoute.use((req, res)=>{
-  console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
-})
+// const dummyRoute = express.Router();
+// dummyRoute.use((req, res)=>{
+//   console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
+// })
 //*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
-app.use('/game-reviews-list', dummyRoute,modifyGameReviewsListRouter);
+app.use('/game-reviews-list',modifyGameReviewsListRouter);
 
 //****************************************************************************************************************/
 
