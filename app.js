@@ -107,7 +107,7 @@ app.use('/user', userRouter);
 // })
 //*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
-app.use('/game-reviews-list',modifyGameReviewsListRouter);
+app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
 
 //****************************************************************************************************************/
 
