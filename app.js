@@ -98,5 +98,8 @@ app.use('/user', userRouter);
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
 
+const likesRouter = require('./routes/likes');
+app.use('/likes', likesRouter);
+
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));

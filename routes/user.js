@@ -13,7 +13,6 @@ router.post('/', async function(req, res) {
           }
         );
   
-      console.log(user);
       res.json(user);
     } catch(err) {
       console.log('Error in /user', err)
