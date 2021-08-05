@@ -32,6 +32,28 @@ router.post('/', async function(req, res) {
       console.log('Error in /user', err)
     }
   });
+  //************************* editing request ********************/
+  router.post('/:id', async function(req, res) {
+
+    const mysqlTimestamp = moment(Date.now()).format('MMMM-DD-YYYY');
+
+    try {
+        const comment = await req.db.query(
+          `UPDATE comment SET commentText=:commentText , time=:time , subject=:subject
+            WHERE ( commentID = :commentID )` ,
+          {
+            commentText: req.body.commentText,
+            time: mysqlTimestamp,
+            commentID: req.params.id,
+            subject: req.body.subject
+          }
+        );
+  
+      res.json(comment);
+    } catch(err) {
+      console.log('Error in /user', err)
+    }
+  });
 
   //********************* delete request  ********************/
   // delete comment depending on comment id 
