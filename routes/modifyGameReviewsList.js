@@ -32,7 +32,6 @@ router.post('/create', async (req, res) => {
         });
         // adding feature arrays
         for(const x in req.body.featureDescriptions){
-            console.log('the review id', lastReviewId.insertId);
             await req.db.query(`
             INSERT INTO review_features (review_id, feature_image, feature_description) 
             VALUES                      (:review_id, :feature_images, :feature_descriptions);`,
@@ -88,7 +87,6 @@ router.put('/edit/:id', async (req, res) => {
         SELECT feature_subset_id FROM review_features WHERE review_id = :review_id`,
         { review_id: req.params.id });
         if(req.body.featureDescriptions.length <=  groupedFeatureIdsArr.length){
-            console.log('NO NEW OR DELETED FEATURES');
             for(const x in groupedFeatureIdsArr){
                 await req.db.query(`
                 UPDATE review_features  
@@ -118,7 +116,6 @@ router.put('/edit/:id', async (req, res) => {
             });
         }
         else{
-            console.log('THERE ARE NEW OR REMOVED FEATURES');
             //only update rows that already exist in the database
             for(const x in groupedFeatureIdsArr){
                 await req.db.query(`

@@ -26,7 +26,7 @@ router.get("/", async (req, res)=> {
                     id: gameReviews[x].id
                 })
                 gameReviews[x].featureDescriptions = tempDescriptionsArr;
-                gameReviews[x].featureImages = tempDescriptionsArr;
+                gameReviews[x].featureImages = tempImagesArr;
                 gameReviews[x].publishDate = tempReviewDate;
             }
             res.json(gameReviews);
@@ -66,9 +66,6 @@ router.get("/:id", async (req, res)=> {
             gameReview.featureDescriptions = tempDescriptionsArr;
             gameReview.featureImages = tempImagesArr;
             gameReview.publishDate = tempReviewDate;
-            console.log(tempDescriptionsArr);
-            console.log(tempImagesArr);
-            console.log(gameReview);
             res.json(gameReview);
     }
     catch(err){
