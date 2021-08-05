@@ -22,7 +22,7 @@ router.post('/', async (req , res) => {
     
         const compare = await bcrypt.compare(req.body.password, userPassword);
     
-        // role is 3 by default whihc would be  
+        // role is 3 by default which would be  
         if (compare) {
           const payload = {
             userId: user.id,
