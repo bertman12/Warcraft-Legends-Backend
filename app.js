@@ -42,6 +42,15 @@ app.use(express.json());
 const getGameReviewsRouter = require('./routes/getGameReviews');
 app.use('/game-reviews-list', getGameReviewsRouter);
 
+//******************************************* imagekit.io authentication ****************************************************/
+//i want to verify a user is logged in 
+//this is fine because i can hide the options in the front end to not allow user to add reviews or images or delete them
+//on login i can store current user locally and use that info to verify the user is logged in and has privleges. 
+//then i wont need to intercept the imagekit request to this endpoint
+
+const imagekitRouter = require('./routes/imagekit');
+app.use('/imagekit', imagekitRouter);
+
 
 //*************************************************** register and login *****************************************************/
 // Public endpoints. User(s) doesn't need to be authenticated in order to reach them
@@ -109,10 +118,13 @@ app.use('/user', userRouter);
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
 app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
 
-//****************************************************************************************************************/
+//******************************************* COMMENTS ****************************************************/
 
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
+
+
+
 
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));
