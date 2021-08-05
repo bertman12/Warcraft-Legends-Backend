@@ -4,7 +4,6 @@ const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
 
 const app = express(); 
-
 // importing and load .env file
 require('dotenv').config();
 
@@ -22,7 +21,7 @@ app.use(async function mysqlConnection(req, res, next) {
     try {
       req.db = await pool.getConnection();
       req.db.connection.config.namedPlaceholders = true;
-  
+
       await req.db.query('SET SESSION sql_mode = "TRADITIONAL"');
       await req.db.query(`SET time_zone = '-8:00'`);
   
@@ -38,6 +37,11 @@ app.use(async function mysqlConnection(req, res, next) {
   
 app.use(cors());
 app.use(express.json());
+
+//*************************************************** get an individual game or all *****************************************************/
+const getGameReviewsRouter = require('./routes/getGameReviews');
+app.use('/game-reviews-list', getGameReviewsRouter);
+
 
 //*************************************************** register and login *****************************************************/
 // Public endpoints. User(s) doesn't need to be authenticated in order to reach them
@@ -61,7 +65,7 @@ app.use(async function verifyJwt(req, res, next) {
   
     const [scheme, token] = req.headers.authorization.split(' ');
   
-    console.log('[scheme, token]', scheme, ' ', token);
+    // console.log('[scheme, token]', scheme, ' ', token);
   
     if (scheme !== 'Bearer') {
       throw(401, 'Invalid authorization');
@@ -69,7 +73,8 @@ app.use(async function verifyJwt(req, res, next) {
   
     try {
       const payload = jwt.verify(token, process.env.JWT_KEY);
-      console.log('payload', payload)
+  
+      // console.log('payload', payload)
   
       req.user = payload;
     } catch (err) {
@@ -94,6 +99,17 @@ app.use(async function verifyJwt(req, res, next) {
 //Then a response is set an returned (like `res.json(users)`)
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
+
+//use this dummy route to check user role before entering endpoint for modifying games
+// const dummyRoute = express.Router();
+// dummyRoute.use((req, res)=>{
+//   console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
+// })
+//*************************************************** Create, update and delete game reviews*****************************************************/
+const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
+app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
+
+//****************************************************************************************************************/
 
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
