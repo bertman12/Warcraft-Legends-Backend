@@ -30,8 +30,9 @@ CREATE TABLE `user` (
   `email` varchar(255) DEFAULT NULL,
   `age` int DEFAULT NULL,
   `location` int DEFAULT NULL,
+  `role` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +41,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'frankie',_binary '$2b$10$Ge44h4N6fja5.Hldyhm6MeM/D7akeBvBSEBkt6NJIxNUtiEkMRoc6','frankie','frankie@bvtca.com',21,95351);
+INSERT INTO `user` VALUES (1,'frankie',_binary '$2b$10$Ge44h4N6fja5.Hldyhm6MeM/D7akeBvBSEBkt6NJIxNUtiEkMRoc6','frankie','frankie@bvtca.com',21,95351,2),(2,'lucas',_binary '$2b$10$vTn9cjH2t74Slc0V10ZrBe82Lzeiw5wkB5p00dZY4zpqZKw/9mJ5S','lucas','hello@gmail.com',69,696969,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,5 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-07-07 15:09:26
-
+-- Dump completed on 2021-08-05 15:53:25
