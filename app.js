@@ -7,6 +7,13 @@ const app = express();
 // importing and load .env file
 require('dotenv').config();
 
+//these 3 lines increase the available request file size for image uploading
+//25mb is the upload limit for imagekit.io
+const bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '25mb'}));
+app.use(bodyParser.urlencoded({limit: '25mb', extended: true}));
+
+
 const port = process.env.PORT; 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,

@@ -30,6 +30,7 @@ router.post('/create', async (req, res) => {
             videoSrc: req.body.videoSrc, 
             imgSrc: req.body.imgSrc
         });
+        
         // adding feature arrays
         for(const x in req.body.featureDescriptions){
             await req.db.query(`
