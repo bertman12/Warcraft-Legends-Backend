@@ -55,6 +55,7 @@ app.use('/game-reviews-list', getGameReviewsRouter);
 //on login i can store current user locally and use that info to verify the user is logged in and has privleges. 
 //then i wont need to intercept the imagekit request to this endpoint
 
+//I might be able to nest this inside the modifygamereviewsroute
 const imagekitRouter = require('./routes/imagekit');
 app.use('/imagekit', imagekitRouter);
 
@@ -130,8 +131,8 @@ app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
 
-
-
+const likesRouter = require('./routes/likes');
+app.use('/likes', likesRouter);
 
 //*********************************** listening to server*******************************************************/
 app.listen( port , () => console.log (`API applicaiton is running. Listening at localhost/${port}`));

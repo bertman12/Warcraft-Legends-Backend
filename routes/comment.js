@@ -9,7 +9,7 @@ const moment = require('moment');
 // comment text, time). Time will use moment.js to post time comm. was created. 
 router.post('/', async function(req, res) {
 
-    const mysqlTimestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    const mysqlTimestamp = moment(Date.now()).format('MMMM-DD-YYYY');
 
     try {
 

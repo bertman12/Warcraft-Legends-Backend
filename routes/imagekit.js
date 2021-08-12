@@ -29,7 +29,6 @@ router.use('/upload', (req, res) => {
         privateKey : process.env.PRIVATE_IMAGEKIT_API_KEY,
         urlEndpoint : process.env.IMAGEKIT_URL_ENDPOINT
     });
-    
     imagekit.upload({
         file : req.body.encoded_file, //required
         fileName : req.body.encoded_file_name,   //required
@@ -37,7 +36,7 @@ router.use('/upload', (req, res) => {
         if(error) console.error(error);
         else {
             console.log(result);
-            res.json(result);}
+            res.json(result.url);}
     });
 })
 
