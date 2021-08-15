@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-//create a game
 router.post('/create', async (req, res) => {
     console.log('CREATING THE GAME', req.body);
 
     let lastReviewId;
     try{
-         //adding review info
         [lastReviewId] = await req.db.query(`
         INSERT INTO game_reviews (title, author, description, genre, version, rating, videoSrc, imgSrc)
         VALUES                   (:title, :author, :description, :genre, :version, :rating, :videoSrc, :imgSrc);
@@ -22,7 +20,6 @@ router.post('/create', async (req, res) => {
             videoSrc: req.body.videoSrc, 
             imgSrc: req.body.imgSrc
         });
-        console.log('req.body.imgSrc name....', req.body.imgSrc);
         // adding feature arrays
         for(const x in req.body.featureDescriptions){
             await req.db.query(`
@@ -52,7 +49,6 @@ router.post('/create', async (req, res) => {
 
 //edit a game
 router.put('/edit/:id', async (req, res) => {
-    console.log('EDITING THE GAME', req.body);
     try{
         req.db.query(`
             UPDATE game_reviews

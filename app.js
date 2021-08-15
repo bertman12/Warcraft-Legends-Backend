@@ -117,11 +117,7 @@ app.use(async function verifyJwt(req, res, next) {
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
-//use this dummy route to check user role before entering endpoint for modifying games
-// const dummyRoute = express.Router();
-// dummyRoute.use((req, res)=>{
-//   console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
-// })
+
 //*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
 app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
