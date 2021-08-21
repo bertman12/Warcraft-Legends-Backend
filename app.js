@@ -13,7 +13,6 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({limit: '25mb', extended: true}));
 
-
 const port = process.env.PORT; 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -22,7 +21,7 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME
 })
 
-//****************************************** MIDDLEWARE *****************************************************************/
+//****************************** ************ MIDDLEWARE *****************************************************************/
 // Establish connection with mySQL 
 app.use(async function mysqlConnection(req, res, next) {
     try {
