@@ -7,6 +7,12 @@ const app = express();
 // importing and load .env file
 require('dotenv').config();
 
+//these 3 lines increase the available request file size for image uploading
+//25mb is the upload limit for imagekit.io
+const bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '25mb'}));
+app.use(bodyParser.urlencoded({limit: '25mb', extended: true}));
+
 const port = process.env.PORT; 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -15,7 +21,7 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME
 })
 
-//****************************************** MIDDLEWARE *****************************************************************/
+//****************************** ************ MIDDLEWARE *****************************************************************/
 // Establish connection with mySQL 
 app.use(async function mysqlConnection(req, res, next) {
     try {
@@ -41,6 +47,16 @@ app.use(express.json());
 //*************************************************** get an individual game or all *****************************************************/
 const getGameReviewsRouter = require('./routes/getGameReviews');
 app.use('/game-reviews-list', getGameReviewsRouter);
+
+//******************************************* imagekit.io authentication ****************************************************/
+//i want to verify a user is logged in 
+//this is fine because i can hide the options in the front end to not allow user to add reviews or images or delete them
+//on login i can store current user locally and use that info to verify the user is logged in and has privleges. 
+//then i wont need to intercept the imagekit request to this endpoint
+
+//I might be able to nest this inside the modifygamereviewsroute
+const imagekitRouter = require('./routes/imagekit');
+app.use('/imagekit', imagekitRouter);
 
 
 //*************************************************** register and login *****************************************************/
@@ -100,16 +116,12 @@ app.use(async function verifyJwt(req, res, next) {
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
-//use this dummy route to check user role before entering endpoint for modifying games
-// const dummyRoute = express.Router();
-// dummyRoute.use((req, res)=>{
-//   console.log('YOU ONLY SEE THIS BECAUSE WE LISTED THIS MIDDLEWARE TO BE INCLUDED IN THE GAME-REVIEWS-LIST ENDPOINT!');
-// })
+
 //*************************************************** Create, update and delete game reviews*****************************************************/
 const modifyGameReviewsListRouter = require('./routes/modifyGameReviewsList');
 app.use('/game-reviews-list/mod',modifyGameReviewsListRouter);
 
-//****************************************************************************************************************/
+//******************************************* COMMENTS ****************************************************/
 
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);

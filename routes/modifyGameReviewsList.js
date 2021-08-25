@@ -1,21 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-
-
-async function getLastReviewId(req){
-    [[query]] = await req.db.query(`SELECT MAX(review_id) FROM review_features`);
-    console.log('the query is..', query);
-    lastReviewId = query['MAX(review_id)'];
-    console.log('The last review id is ...',lastReviewId);
-    return lastReviewId;
-}
-
-//create a game
 router.post('/create', async (req, res) => {
+    console.log('CREATING THE GAME', req.body);
+
     let lastReviewId;
     try{
-         //adding review info
         [lastReviewId] = await req.db.query(`
         INSERT INTO game_reviews (title, author, description, genre, version, rating, videoSrc, imgSrc)
         VALUES                   (:title, :author, :description, :genre, :version, :rating, :videoSrc, :imgSrc);
@@ -163,7 +153,7 @@ router.put('/edit/:id', async (req, res) => {
         console.error(err);
     }
 });
-    
+ 
 //delete a game
 router.delete('/delete/:id', async(req, res) => {
     try{

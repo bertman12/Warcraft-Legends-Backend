@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-//get all game reviews
 router.get("/", async (req, res)=> {
     try{
         const [gameReviews] = await req.db.query(`SELECT * FROM game_reviews`);
@@ -36,7 +35,6 @@ router.get("/", async (req, res)=> {
     }
 });
 
-//get an individual game review
 router.get("/:id", async (req, res)=> {
     try{
         const [[gameReview]] = await req.db.query(
